@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\MeetRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
+
 
 /**
  * @ORM\Entity(repositoryClass=MeetRepository::class)
@@ -17,32 +19,24 @@ class Meet
      */
     private $id;
 
+
+
     /**
+     * @Gedmo\Slug(fields={"name"})
      * @ORM\Column(type="string", length=255)
      */
-    private $sport;
+    private $slug;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $slug;
+    private $name;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getSport(): ?string
-    {
-        return $this->sport;
-    }
-
-    public function setSport(string $sport): self
-    {
-        $this->sport = $sport;
-
-        return $this;
-    }
 
     public function getSlug(): ?string
     {
@@ -52,6 +46,18 @@ class Meet
     public function setSlug(string $slug): self
     {
         $this->slug = $slug;
+
+        return $this;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): self
+    {
+        $this->name = $name;
 
         return $this;
     }
