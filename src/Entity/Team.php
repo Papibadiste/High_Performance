@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\TeamRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 
@@ -33,6 +35,25 @@ class Team
      * @ORM\Column(type="string", length=255)
      */
     private $slug;
+
+    /**
+     * @ORM\ManyToMany(targetEntity=Meet::class, mappedBy="teams")
+     */
+    private $meets;
+
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Sport::class, inversedBy="teams")
+     */
+    private $sport;
+
+
+
+    public function __construct()
+    {
+        $this->meets = new ArrayCollection();
+        $this->sport = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -74,4 +95,47 @@ class Team
 
         return $this;
     }
+
+    /**
+     * @return Collection|Meet[]
+     */
+    public function getMeets(): Collection
+    {
+        return $this->meets;
+    }
+
+    public function addMeet(Meet $meet): self
+    {
+        if (!$this->meets->contains($meet)) {
+            $this->meets[] = $meet;
+            $meet->addTeam($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMeet(Meet $meet): self
+    {
+        if ($this->meets->removeElement($meet)) {
+            $meet->removeTeam($this);
+        }
+
+        return $this;
+    }
+
+
+
+    public function getSport(): ?Sport
+    {
+        return $this->sport;
+    }
+
+    public function setSport(?Sport $sport): self
+    {
+        $this->sport = $sport;
+
+        return $this;
+    }
+
+
 }

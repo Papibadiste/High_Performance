@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Gedmo\Mapping\Annotation as Gedmo;
@@ -57,6 +59,16 @@ class User implements UserInterface
      * @ORM\Column(type="datetime")
      */
     private $updated_at;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Beet::class, mappedBy="user")
+     */
+    private $beets;
+
+    public function __construct()
+    {
+        $this->beets = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -193,6 +205,36 @@ class User implements UserInterface
     public function setUpdatedAtValue()
     {
         $this->updated_at = new \DateTime();
+    }
+
+    /**
+     * @return Collection|Beet[]
+     */
+    public function getBeets(): Collection
+    {
+        return $this->beets;
+    }
+
+    public function addBeet(Beet $beet): self
+    {
+        if (!$this->beets->contains($beet)) {
+            $this->beets[] = $beet;
+            $beet->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBeet(Beet $beet): self
+    {
+        if ($this->beets->removeElement($beet)) {
+            // set the owning side to null (unless already changed)
+            if ($beet->getUser() === $this) {
+                $beet->setUser(null);
+            }
+        }
+
+        return $this;
     }
 
 }
